@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    container_name: sinapse_maestro_crm_db
+    restart: always
+    environment:
+      POSTGRES_USER: sinapse_user
+      POSTGRES_PASSWORD: sinapse_password
+      POSTGRES_DB: sinapse_maestro_crm
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - crm_network
+
+  backend:
+    build: ./backend
+    container_name: sinapse_maestro_crm_backend
+    restart: always
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://sinapse_user:sinapse_password@db:5432/sinapse_maestro_crm
+    networks:
+      - crm_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: sinapse_maestro_crm_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - crm_network
+
+  worker:
+    build: ./backend
+    container_name: sinapse_maestro_crm_worker
+    command: rq worker -u ${REDIS_URL:-redis://redis:6379/0} sinapse
+    depends_on:
+      - redis
+      - backend
+    environment:
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      - DATABASE_URL=postgresql://sinapse_user:sinapse_password@db:5432/sinapse_maestro_crm
+    volumes:
+      - ./backend:/app
+    networks:
+      - crm_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sinapse_maestro_crm_frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    networks:
+      - crm_network
+
+volumes:
+  postgres_data:
+
+networks:
+  crm_network:
+    driver: bridge

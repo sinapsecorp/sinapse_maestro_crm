@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+.env.*
+
+# Node
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Builds & cache
+*.log
+*.sqlite3
+
+# Uploads (podem conter dados sensíveis)
+backend/uploads/
+
+# Docker
+*.pid

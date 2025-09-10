@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Configurações padrão para modo claro (não usadas no projeto) */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Paleta Sinapse Maestro - Dark Mode */
+    --background: 206 98% 15%; /* #012a4a - Fundo Principal */
+    --foreground: 0 0% 100%; /* #FFFFFF - Texto Principal */
+
+    --card: 206 99% 20%; /* #013a63 - Fundo Secundário */
+    --card-foreground: 0 0% 100%;
+
+    --popover: 206 98% 15%; /* #012a4a */
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 199 44% 57%; /* #61a5c2 - Destaque Principal */
+    --primary-foreground: 206 98% 15%;
+
+    --secondary: 199 57% 38%; /* #2a6f97 - Interativo 1 */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 204 97% 24%; /* #01497c - Fundo Secundário 2 */
+    --muted-foreground: 199 37% 73%; /* #89c2d9 - Destaque 2 */
+
+    --accent: 199 59% 40%; /* #2c7da0 - Interativo 2 */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 204 97% 24%; /* #01497c */
+    --input: 204 97% 24%;
+    --ring: 199 44% 57%; /* #61a5c2 */
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border transition-colors duration-200;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    /* 🚀 Tailwind CSS funcionando perfeitamente! */
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Estilos para scrollbar personalizada */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme(colors.muted.DEFAULT) theme(colors.background);
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: theme(colors.background);
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: theme(colors.muted.DEFAULT);
+    border-radius: 3px;
+    border: 1px solid theme(colors.background);
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: theme(colors.accent.DEFAULT);
+  }
+  
+  /* Estilos para transições globais */
+  .transition-all-smooth {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  
+  /* Glassmorphism effect */
+  .glass {
+    background: rgba(1, 58, 99, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(1, 73, 124, 0.2);
+  }
+}

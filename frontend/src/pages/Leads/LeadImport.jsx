@@ -13,7 +13,7 @@ export default function LeadImport({ onImported }) {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.get('/areas-of-expertise/');
+        const res = await api.get('/api/areas-of-expertise/');
         setAreas(res.data);
       } catch {}
     };
@@ -29,7 +29,7 @@ export default function LeadImport({ onImported }) {
   const startPolling = (job_id) => {
     const interval = setInterval(async () => {
       try {
-        const st = await api.get('/leads/import/status', { params: { job_id } });
+        const st = await api.get('/api/leads/import/status', { params: { job_id } });
         const { status, meta } = st.data;
         if (status === 'finished' || status === 'failed' || status === 'stopped') {
           clearInterval(interval);
@@ -56,7 +56,7 @@ export default function LeadImport({ onImported }) {
       const form = new FormData();
       form.append('file', file);
       if (areaId) form.append('area_of_expertise_id', areaId);
-      const res = await api.post('/leads/import', form, {
+      const res = await api.post('/api/leads/import', form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       const { job_id, total } = res.data;

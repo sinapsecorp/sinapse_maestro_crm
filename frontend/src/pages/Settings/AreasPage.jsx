@@ -10,21 +10,21 @@ export default function AreasPage() {
   const [description, setDescription] = useState('')
 
   const fetchAreas = async () => {
-    const res = await api.get('/areas-of-expertise/')
+    const res = await api.get('/api/areas-of-expertise/')
     setAreas(res.data)
   }
 
   useEffect(() => { fetchAreas() }, [])
 
   const handleCreate = async () => {
-    await api.post('/areas-of-expertise/', { name, description })
+    await api.post('/api/areas-of-expertise/', { name, description })
     setName('')
     setDescription('')
     fetchAreas()
   }
 
   const handleDelete = async (id) => {
-    await api.delete(`/areas-of-expertise/${id}`)
+    await api.delete(`/api/areas-of-expertise/${id}`)
     fetchAreas()
   }
 

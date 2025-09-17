@@ -29,6 +29,14 @@ services:
       - db
     environment:
       - DATABASE_URL=postgresql://sinapse_user:sinapse_password@db:5432/sinapse_maestro_crm
+      - MAIL_MAILER=smtp
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=465
+      - MAIL_USERNAME=sac@viobank.com.br
+      - MAIL_PASSWORD=setj bnxe hvlx jdjh
+      - MAIL_ENCRYPTION=ssl
+      - MAIL_FROM_NAME=VioBank - Venda, Integre e Otimize!
+      - MAIL_FROM_ADDRESS=sac@viobank.com.br
     networks:
       - crm_network
 
@@ -50,6 +58,14 @@ services:
     environment:
       - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
       - DATABASE_URL=postgresql://sinapse_user:sinapse_password@db:5432/sinapse_maestro_crm
+      - MAIL_MAILER=smtp
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=465
+      - MAIL_USERNAME=sac@viobank.com.br
+      - MAIL_PASSWORD=setj bnxe hvlx jdjh
+      - MAIL_ENCRYPTION=ssl
+      - MAIL_FROM_NAME=VioBank - Venda, Integre e Otimize!
+      - MAIL_FROM_ADDRESS=sac@viobank.com.br
     volumes:
       - ./backend:/app
     networks:

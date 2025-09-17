@@ -13,6 +13,7 @@ from io import StringIO
 import tempfile
 import os
 from typing import List, Dict
+from src.utils.pagination import normalize_pagination
 import openpyxl
 import xlrd
 
@@ -24,6 +25,8 @@ def read_leads(
     db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
+    page: int | None = None,
+    page_size: int | None = None,
     q: str | None = None,
     f: str | None = None,
     current_user: User = Depends(get_current_user),
@@ -31,11 +34,12 @@ def read_leads(
     """
     Retrieve leads.
     """
+    s, l = normalize_pagination(page=page, page_size=page_size, skip=skip, limit=limit)
     if q or f:
-        leads = lead_service.search_and_filter(db, query=q, filter_key=f, skip=skip, limit=limit)
+        leads = lead_service.search_and_filter(db, query=q, filter_key=f, skip=s, limit=l)
         total = lead_service.count_search_and_filter(db, query=q, filter_key=f)
     else:
-        leads = lead_service.get_leads(db, skip=skip, limit=limit)
+        leads = lead_service.get_leads(db, skip=s, limit=l)
         total = lead_service.get_total_count(db)
     response.headers["X-Total-Count"] = str(total)
     return leads

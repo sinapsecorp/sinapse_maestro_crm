@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, FileText, Send, TrendingUp, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, FileText, Send, Layers, TrendingUp, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Sidebar = ({ onClose }) => {
@@ -21,6 +21,12 @@ const Sidebar = ({ onClose }) => {
       icon: Send,
       label: 'Campanhas',
       description: 'E-mail marketing'
+    },
+    {
+      to: '/templates',
+      icon: Layers,
+      label: 'Modelos',
+      description: 'Templates de e-mail'
     },
     {
       to: '/analytics',
@@ -84,7 +90,7 @@ const Sidebar = ({ onClose }) => {
       <div className="px-4 py-4 border-t border-border/50">
         <div className="space-y-2">
           <NavLink
-            to="/settings/areas"
+            to="/settings"
             className={({ isActive }) =>
               cn(
                 'w-full flex items-center px-3 py-2 text-sm rounded-lg transition-all-smooth',

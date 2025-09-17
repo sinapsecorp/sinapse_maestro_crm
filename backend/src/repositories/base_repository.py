@@ -1,6 +1,7 @@
 from typing import Generic, TypeVar, Type, Any
 from sqlalchemy.orm import Session
 from src.database.base import Base
+from src.utils.pagination import MAX_PAGE_SIZE
 
 ModelType = TypeVar("ModelType", bound=Base)
 
@@ -12,7 +13,10 @@ class BaseRepository(Generic[ModelType]):
         return db.query(self.model).filter(self.model.id == id).first()
 
     def get_all(self, db: Session, *, skip: int = 0, limit: int = 100) -> list[ModelType]:
-        return db.query(self.model).offset(skip).limit(limit).all()
+        # Enforce hard max page size server-side
+        effective_limit = max(1, min(int(limit or MAX_PAGE_SIZE), MAX_PAGE_SIZE))
+        effective_skip = max(0, int(skip or 0))
+        return db.query(self.model).offset(effective_skip).limit(effective_limit).all()
 
     def count_all(self, db: Session) -> int:
         return db.query(self.model).count()

@@ -10,7 +10,7 @@ export default function BulkDeleteByAreas({ onDone }) {
 
   useEffect(() => {
     const load = async () => {
-      const res = await api.get('/areas-of-expertise/')
+      const res = await api.get('/api/areas-of-expertise/')
       setAreas(res.data)
     }
     load()
@@ -22,7 +22,7 @@ export default function BulkDeleteByAreas({ onDone }) {
 
   const handleDelete = async () => {
     if (!selected.length) return
-    await api.post('/leads/bulk-delete/by-areas', { area_of_expertise_ids: selected })
+    await api.post('/api/leads/bulk-delete/by-areas', { area_of_expertise_ids: selected })
     show({ title: 'Remoção em massa', message: 'Leads removidos com sucesso.' })
     onDone && onDone()
   }

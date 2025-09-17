@@ -37,14 +37,14 @@ export default function LeadsPage() {
             const params = { skip: (page - 1) * pageSize, limit: pageSize };
             if (searchQuery) params.q = searchQuery;
             if (filterKey) params.f = filterKey;
-            const res = await api.get('/leads/', { params });
+            const res = await api.get('/api/leads/', { params });
             setLeads(res.data);
             const headerTotal = res.headers['x-total-count'] || res.headers['X-Total-Count'] || res.headers['X-total-count'];
             const parsed = headerTotal ? parseInt(headerTotal) : NaN;
             setTotal(!isNaN(parsed) ? parsed : (page === 1 ? res.data.length : total));
             // stats
             try {
-                const st = await api.get('/leads/stats');
+                const st = await api.get('/api/leads/stats');
                 setStats(st.data);
             } catch {}
         } finally {

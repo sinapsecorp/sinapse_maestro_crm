@@ -109,6 +109,9 @@ class LeadRepository(BaseRepository[Lead]):
     def get_by_email(self, db: Session, *, email: str) -> Lead | None:
         return db.query(Lead).filter(Lead.email == email).first()
 
+    def get_by_cnpj(self, db: Session, *, cnpj: str) -> Lead | None:
+        return db.query(Lead).filter(Lead.cnpj == cnpj).first()
+
     # get_all and count_all already exist in BaseRepository and retornam todos
 
 lead_repository = LeadRepository()

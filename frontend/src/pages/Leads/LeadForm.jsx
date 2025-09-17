@@ -37,7 +37,7 @@ export function LeadForm({ setOpen, onCreated, initialData }) {
     useEffect(() => {
         const fetchAreas = async () => {
             try {
-                const response = await api.get('/areas-of-expertise/');
+                const response = await api.get('/api/areas-of-expertise/');
                 setAreasOfExpertise(response.data);
             } catch (err) {
                 console.error("Failed to fetch areas of expertise", err);
@@ -63,10 +63,10 @@ export function LeadForm({ setOpen, onCreated, initialData }) {
         try {
             const payload = { ...formData };
             if (formData.id) {
-                await api.put(`/leads/${formData.id}`, payload);
+                await api.put(`/api/leads/${formData.id}`, payload);
                 show({ title: 'Sucesso', message: 'Lead atualizado com sucesso.' });
             } else {
-                await api.post('/leads/', payload);
+                await api.post('/api/leads/', payload);
                 show({ title: 'Sucesso', message: 'Lead criado com sucesso.' });
             }
             onCreated && onCreated();

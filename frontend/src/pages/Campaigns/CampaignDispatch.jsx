@@ -3,7 +3,7 @@ import api from '@/services/api';
 
 export default function CampaignDispatch({ campaignId, onDone }) {
   const handleDispatch = async () => {
-    await api.post(`/campaigns/${campaignId}/dispatch`);
+    await api.post(`/api/campaigns/${campaignId}/dispatch`);
     onDone && onDone();
   };
 

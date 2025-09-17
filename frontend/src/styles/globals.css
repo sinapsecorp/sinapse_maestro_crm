@@ -77,6 +77,15 @@
 }
 
 @layer components {
+  /* Forçar direção LTR em campos de texto quando necessário */
+  .force-ltr {
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .force-ltr * {
+    direction: ltr;
+    unicode-bidi: embed;
+  }
   /* Estilos para scrollbar personalizada */
   .scrollbar-thin {
     scrollbar-width: thin;

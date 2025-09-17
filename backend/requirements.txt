@@ -14,3 +14,4 @@ rq
 openpyxl
 xlrd==1.2.0
 email-validator
+cryptography

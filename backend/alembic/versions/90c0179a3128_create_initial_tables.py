@@ -20,9 +20,33 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Upgrade schema."""
-    # Criação inicial (já existente no seu ambiente) – aqui vamos garantir colunas necessárias
     from alembic import op
     import sqlalchemy as sa
+
+    # Criar tabela areas_of_expertise primeiro
+    op.create_table('areas_of_expertise',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('name', sa.String(), nullable=False),
+    sa.Column('description', sa.String(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_areas_of_expertise_name'), 'areas_of_expertise', ['name'], unique=False)
+
+    # Criar tabela leads
+    op.create_table('leads',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('email', sa.String(), nullable=True),
+    sa.Column('full_name', sa.String(), nullable=True),
+    sa.Column('phone', sa.String(), nullable=True),
+    sa.Column('company', sa.String(), nullable=True),
+    sa.Column('area_of_expertise_id', sa.UUID(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['area_of_expertise_id'], ['areas_of_expertise.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_leads_email'), 'leads', ['email'], unique=True)
 
     # Campos adicionais conforme layout do XLSX
     with op.batch_alter_table('leads') as batch_op:
@@ -76,14 +100,6 @@ def upgrade() -> None:
 
     # Índices úteis
     op.create_index('ix_leads_cnpj', 'leads', ['cnpj'], unique=False)
-    op.create_table('areas_of_expertise',
-    sa.Column('id', sa.UUID(), nullable=False),
-    sa.Column('name', sa.String(), nullable=False),
-    sa.Column('description', sa.String(), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_areas_of_expertise_name'), 'areas_of_expertise', ['name'], unique=False)
     op.create_table('users',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),

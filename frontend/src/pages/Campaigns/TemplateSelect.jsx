@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { presetTemplates, presetLabels } from '@/pages/Templates/presetTemplates'
 import { Label } from '@/components/ui/label'
+import { okeEditableTemplate } from './emailTemplates'
 import { useCampaignWizard } from '@/hooks/useCampaignWizard'
 import { useNavigate } from 'react-router-dom'
 import api from '@/services/api'
@@ -25,9 +25,58 @@ export default function TemplateSelect() {
     })()
   }, [])
 
+  const extractContentWithStyles = (html) => {
+    try {
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(html || '', 'text/html')
+      const isFromModels = !!doc.querySelector('meta[name="tpl-editor"][content="grapesjs"]')
+      const body = doc?.body?.innerHTML || ''
+
+      if (isFromModels) {
+        // Reconstrói o wrapper com base na cfg salva, mas SEM permitir desalinhamento: sempre centralizado
+        let cfg = null
+        try {
+          const meta = doc.querySelector('meta[name="tpl-config"]')
+          const c = meta?.getAttribute('content') || ''
+          if (c) {
+            try { cfg = JSON.parse(c) } catch (_) {
+              try { cfg = JSON.parse(decodeURIComponent(escape(atob(c)))) } catch (__) { cfg = null }
+            }
+          }
+        } catch (_) {
+          cfg = null
+        }
+        const width = Number(cfg?.width) || 600
+        const align = '0 auto'
+        const contentBg = cfg?.contentBg || 'transparent'
+        const linkColor = cfg?.linkColor || '#0068a5'
+        // Preserva quaisquer estilos do <head> (inclui CSS do GrapesJS)
+        const styles = Array.from(doc.querySelectorAll('style'))
+          .map((s) => s?.innerHTML || '')
+          .filter(Boolean)
+          .join('\n')
+        const headStyleTag = styles ? `<style>${styles}</style>` : ''
+        const linkStyle = `<style>a{color:${linkColor}}</style>`
+        return `${headStyleTag}${linkStyle}<div style="max-width:${width}px;margin:${align};background:${contentBg}">${body}</div>`
+      }
+
+      // Fallback: mantém <style> do head + body
+      const styles = Array.from(doc.querySelectorAll('style'))
+        .map((s) => s?.innerHTML || '')
+        .filter(Boolean)
+        .join('\n')
+      const headStyleTag = styles ? `<style>${styles}</style>` : ''
+      const finalBody = body || (html || '')
+      return `${headStyleTag}${finalBody}`
+    } catch (_) {
+      return html || ''
+    }
+  }
+
   const handleSelect = (tpl) => {
     if (emailChannel) {
-      setChannelTemplate(emailChannel.id, { subject: tpl.subject || form.subject, content: tpl.content || '' })
+      const content = extractContentWithStyles(tpl.content || '')
+      setChannelTemplate(emailChannel.id, { subject: tpl.subject || form.subject, content })
     }
     navigate('/campaigns/new/channel')
   }
@@ -62,16 +111,7 @@ export default function TemplateSelect() {
         </div>
       )}
 
-      <div className="pt-6 space-y-2">
-        <Label>Ou começar de um modelo pronto</Label>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-          {Object.keys(presetTemplates).map((k) => (
-            <Button key={k} variant="outline" size="sm" onClick={() => handleSelect({ subject: form.subject, content: presetTemplates[k]() })}>
-              {presetLabels[k] || k}
-            </Button>
-          ))}
-        </div>
-      </div>
+      
     </div>
   )
 }

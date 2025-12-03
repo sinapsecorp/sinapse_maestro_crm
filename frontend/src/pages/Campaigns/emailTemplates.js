@@ -180,14 +180,15 @@ export function okeEditableTemplate({
   titulo = 'Título da sua mensagem',
   paragrafo1 = 'Descreva aqui sua oferta e benefícios.',
   paragrafo2 = 'Inclua detalhes adicionais, prazos e diferenciais.',
+  contentBg = '#ffffff',
 } = {}) {
   const safe = (s) => (s ?? '')
   const color = primaryColor
   return `
-  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#ffffff;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;">
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:0;padding:24px 0;font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;">
     <tr>
       <td align="center" style="padding:0;">
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width:600px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width:600px;background:${contentBg};border-radius:8px;">
           <!-- HERO (cole sua imagem no bloco abaixo) -->
           <tr>
             <td style="padding:0 8px;">
@@ -200,29 +201,55 @@ export function okeEditableTemplate({
           <!-- TEXTO LIVRE -->
           <tr>
             <td style="padding:0 8px;">
-              <h2 style="margin:0 0 12px 0;font-size:20px;">${safe(titulo)}</h2>
-              <p style="margin:0 0 12px 0;">${safe(paragrafo1)}</p>
-              <p style="margin:0 0 16px 0;">${safe(paragrafo2)}</p>
+              <div style="max-width:560px;margin:0 auto;">
+                <div style="text-align:left;">
+                  <h2 style="margin:0 0 12px 0;font-size:20px;">${safe(titulo)}</h2>
+                  <p style="margin:0 0 12px 0;">${safe(paragrafo1)}</p>
+                  <p style="margin:0 0 16px 0;">${safe(paragrafo2)}</p>
+                </div>
+              </div>
             </td>
           </tr>
           <!-- CTA -->
           <tr>
-            <td style="padding:8px;">
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:8px auto;">
-                <tr>
-                  <td align="center" bgcolor="${color}" style="background:${color};border-radius:8px;">
-                    <a href="${safe(ctaUrl)}" style="display:inline-block;padding:12px 20px;color:#ffffff;text-decoration:none;font-weight:700;border-radius:8px;background:${color};">${safe(ctaText)}</a>
-                  </td>
-                </tr>
-              </table>
+            <td style="padding:8px;text-align:center;">
+              <a href="${safe(ctaUrl)}" style="display:inline-block;padding:12px 20px;color:#ffffff;text-decoration:none;font-weight:700;border-radius:8px;background:${color};background-color:${color};border:none;margin:8px auto;">${safe(ctaText)}</a>
             </td>
           </tr>
           <tr><td style="height:16px;line-height:16px">&nbsp;</td></tr>
           <!-- RODAPÉ EDITÁVEL NA MESMA COR -->
           <tr>
             <td style="padding:0 8px;">
-              <div data-slot="footer" style="background:${color};color:#ffffff;text-align:center;padding:18px 12px;border-radius:6px;">
-                Edite este rodapé. Você pode alterar a cor substituindo ${color} por outra no código.
+              <div data-slot="footer" style="background:${color};color:#ffffff;padding:12px;border-radius:6px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding:4px 0;text-align:center;">
+                      Edite este rodapé. Você pode alterar a cor substituindo ${color} por outra no código.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding-top:8px;text-align:right;">
+                      <div data-slot="footer-icons" style="line-height:0;">
+                        <table role="presentation" align="right" cellpadding="0" cellspacing="0" border="0" style="margin:0;line-height:0;">
+                          <tr>
+                            <td style="line-height:0;">
+                              <div data-slot="fi-1" style="min-width:28px;min-height:28px;"></div>
+                            </td>
+                            <td style="padding-left:16px;line-height:0;">
+                              <div data-slot="fi-2" style="min-width:28px;min-height:28px;"></div>
+                            </td>
+                            <td style="padding-left:16px;line-height:0;">
+                              <div data-slot="fi-3" style="min-width:28px;min-height:28px;"></div>
+                            </td>
+                            <td style="padding-left:16px;line-height:0;">
+                              <div data-slot="fi-4" style="min-width:28px;min-height:28px;"></div>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
               </div>
             </td>
           </tr>

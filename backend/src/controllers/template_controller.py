@@ -41,6 +41,7 @@ def create_template(
     t = Template(
         subject=data.subject,
         content=data.content,
+        editor_config=getattr(data, 'editor_config', None),
         channel_id=data.channel_id,
         campaign_id=data.campaign_id,
     )
@@ -77,6 +78,8 @@ def update_template(
         t.channel_id = data.channel_id
     if data.campaign_id is not None:
         t.campaign_id = data.campaign_id
+    if data.editor_config is not None:
+        t.editor_config = data.editor_config
 
     # sobrescrever anexos se fornecidos
     if data.attachments is not None:

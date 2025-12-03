@@ -1,78 +1,105 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import grapesjs from 'grapesjs'
-import 'grapesjs/dist/css/grapes.min.css'
+import { Editor } from '@tinymce/tinymce-react'
 import api from '@/services/api'
 import { Button } from '@/components/ui/button'
 import TemplateGallery from './TemplateGallery'
 import { presetTemplates } from './presetTemplates'
 import TemplateEditorConfigPanel from './TemplateEditorConfigPanel'
 
-// Util: converte HTML puro do GrapesJS para um wrapper de e-mail seguro
-function wrapEmail(html) {
-  const doc = `<!doctype html><html><head><meta charset="UTF-8"></head><body>${html}</body></html>`
-  return doc
+// Util: converte HTML do TINYMCE para um wrapper de e-mail seguro
+function wrapEmail(html, config = {}) {
+  const width = config.width || 600
+  const contentBg = config.contentBg || '#ffffff'
+  const font = config.font || 'Arial, Helvetica, sans-serif'
+  const linkColor = config.linkColor || '#0068a5'
+
+  const emailWrapper = `<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Template</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { margin: 0; padding: 20px 0; font-family: ${font}; background: #f5f5f5; }
+    .email-container { max-width: ${width}px; margin: 0 auto; background: ${contentBg}; }
+    .email-content { padding: 20px; }
+    a { color: ${linkColor}; }
+    @media only screen and (max-width: 600px) {
+      .email-container { width: 100% !important; margin: 0 !important; }
+      .email-content { padding: 15px !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="email-content">
+      ${html}
+    </div>
+  </div>
+</body>
+</html>`
+
+  return emailWrapper
+}
+
+// Util: extrai apenas o conteúdo do <body> de um HTML completo
+function extractBody(html) {
+  try {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(html || '', 'text/html')
+    const body = doc?.body?.innerHTML
+    if (typeof body === 'string' && body.length > 0) return body
+    return html || ''
+  } catch (_) {
+    return html || ''
+  }
+}
+
+// Util: extrai configurações do HTML salvo
+function extractConfig(html) {
+  try {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(html, 'text/html')
+    const meta = doc.querySelector('meta[name="tpl-config"]')
+    if (meta?.getAttribute('content')) {
+      const c = meta.getAttribute('content')
+      let parsed = null
+      try {
+        parsed = JSON.parse(c)
+      } catch (_) {
+        try {
+          parsed = JSON.parse(decodeURIComponent(escape(atob(c))))
+        } catch (__) {
+          parsed = null
+        }
+      }
+      if (parsed && typeof parsed === 'object') {
+        return parsed
+      }
+    }
+  } catch (_) {}
+  return {}
 }
 
 export default function TemplateEditor() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const editorRef = useRef(null)
-  const containerRef = useRef(null)
   const [loading, setLoading] = useState(false)
   const [subject, setSubject] = useState('')
-  const [initialHtml, setInitialHtml] = useState('')
+  const [content, setContent] = useState('')
   const [showGallery, setShowGallery] = useState(!id)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-
-  // Inicializa editor apenas uma vez
-  useEffect(() => {
-    if (editorRef.current || !containerRef.current) return
-
-    const e = grapesjs.init({
-      container: containerRef.current,
-      height: '80vh',
-      fromElement: false,
-      storageManager: false,
-      canvas: { styles: [] },
-      selectorManager: { componentFirst: true },
-      blockManager: { appendTo: '#blocks-panel' },
-      styleManager: { appendTo: '#styles-panel' },
-      layerManager: { appendTo: '#layers-panel' },
-      traitManager: { appendTo: '#traits-panel' },
-      deviceManager: { devices: [{ name: 'Desktop', width: '' }, { name: 'Mobile', width: '320px' }] },
-    })
-
-    // Blocos principais (Conteúdo)
-    const bm = e.BlockManager
-    bm.add('title', { label: 'Título', category: 'Conteúdo', content: '<h1 style="margin:0 0 8px">Título</h1>' })
-    bm.add('paragraph', { label: 'Parágrafo', category: 'Conteúdo', content: '<p style="margin:0 0 12px">Escreva um parágrafo.</p>' })
-    bm.add('list', { label: 'Lista', category: 'Conteúdo', content: '<ul><li>Item</li><li>Item</li></ul>' })
-    bm.add('image', { label: 'Imagem', category: 'Mídia', content: { type: 'image', attributes: { alt: 'Imagem' }, style: { width: '100%' } } })
-    bm.add('video', { label: 'Vídeo', category: 'Mídia', content: '<div style="text-align:center"><a href="#">Link para vídeo</a></div>' })
-    bm.add('button', { label: 'Botão', category: 'Interativos', content: '<a href="#" style="display:inline-block;background:#0a78ff;color:#fff;padding:12px 18px;border-radius:6px;text-decoration:none">Call to Action</a>' })
-    bm.add('social', { label: 'Redes Sociais', category: 'Interativos', content: '<p>Redes: <a href="#">Facebook</a> · <a href="#">Instagram</a></p>' })
-    bm.add('divider', { label: 'Divisor', category: 'Estrutura', content: '<hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0"/>' })
-    bm.add('spacer', { label: 'Espaçador', category: 'Estrutura', content: '<div style="height:16px"></div>' })
-    bm.add('table', { label: 'Tabela', category: 'Estrutura', content: '<table style="width:100%;border-collapse:collapse"><tr><td>Col A</td><td>Col B</td></tr></table>' })
-    bm.add('menu', { label: 'Menu', category: 'Estrutura', content: '<p><a href="#">Home</a> · <a href="#">Produtos</a> · <a href="#">Contato</a></p>' })
-    bm.add('html', { label: 'HTML', category: 'Avançado', content: '<div data-gjs-type="text">Cole seu HTML</div>' })
-    bm.add('icons', { label: 'Ícones', category: 'Avançado', content: '<p>⭐ ⭐ ⭐</p>' })
-    bm.add('consent', { label: 'Consentimento', category: 'Avançado', content: '<p style="font-size:12px;color:#666">Caso não queira mais receber estes e-mails, <a href="#">cancele sua inscrição</a>.</p>' })
-
-    // Rows/Colunas rápidas
-    bm.add('row1', { label: '1 coluna', category: 'Linhas', content: '<div class="row"><div class="col" style="width:100%"></div></div>' })
-    bm.add('row2', { label: '2 colunas', category: 'Linhas', content: '<div class="row" style="display:flex;gap:12px"><div class="col" style="flex:1"></div><div class="col" style="flex:1"></div></div>' })
-    bm.add('row3', { label: '3 colunas', category: 'Linhas', content: '<div class="row" style="display:flex;gap:12px"><div class="col" style="flex:1"></div><div class="col" style="flex:1"></div><div class="col" style="flex:1"></div></div>' })
-
-    // Configurações globais simplificadas via comandos customizados
-    e.on('load', () => {
-      if (initialHtml) e.setComponents(initialHtml)
-    })
-
-    editorRef.current = e
-  }, [initialHtml])
+  const [config, setConfig] = useState({
+    width: 600,
+    bg: '#ffffff',
+    contentBg: '#ffffff',
+    font: 'Arial, Helvetica, sans-serif',
+    linkColor: '#0068a5',
+    preheader: ''
+  })
 
   // Carregar template quando id presente
   useEffect(() => {
@@ -82,25 +109,91 @@ export default function TemplateEditor() {
       try {
         const res = await api.get(`/api/templates/${id}`)
         setSubject(res.data?.subject || '')
-        setInitialHtml(res.data?.content || '')
+        const raw = res.data?.content || ''
+        const extractedConfig = extractConfig(raw)
+        if (extractedConfig && Object.keys(extractedConfig).length > 0) {
+          setConfig((prev) => ({ ...prev, ...extractedConfig }))
+        } else if (res.data?.editor_config) {
+          setConfig((prev) => ({ ...prev, ...(res.data.editor_config || {}) }))
+        }
+        setContent(extractBody(raw))
+      } catch (e) {
+        setError('Falha ao carregar template.')
       } finally {
         setLoading(false)
       }
     })()
   }, [id])
 
+  // Configuração do TINYMCE para email marketing
+  const getTinyMCEConfig = () => {
+    return {
+      height: 600,
+      menubar: false,
+      plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
+        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'media', 'table', 'help', 'wordcount'
+      ],
+      toolbar: 'undo redo | blocks | ' +
+        'bold italic underline strikethrough | alignleft aligncenter ' +
+        'alignright alignjustify | bullist numlist outdent indent | ' +
+        'removeformat | forecolor backcolor | link image media | ' +
+        'table | code fullscreen',
+      toolbar_mode: 'sliding',
+      content_css: false,
+      body_class: 'email-content',
+      content_style: `
+        body.email-content {
+          font-family: ${config.font};
+          font-size: 14px;
+          line-height: 1.6;
+          color: #333333;
+          max-width: ${config.width}px;
+          margin: 0 auto;
+          padding: 20px;
+          background: ${config.contentBg};
+        }
+        body.email-content a { color: ${config.linkColor}; }
+      `,
+      font_family_formats: 'Arial=arial,helvetica,sans-serif; Tahoma=tahoma,arial,helvetica,sans-serif; Verdana=verdana,geneva,sans-serif; Georgia=georgia,times new roman,times,serif',
+      fontsize_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt 48pt',
+      link_context_toolbar: true,
+      image_advtab: true,
+      image_title: true,
+      automatic_uploads: false,
+      setup: (editor) => {
+        editor.on('change', () => {
+          setContent(editor.getContent())
+        })
+      }
+    }
+  }
+
   const handleSave = async () => {
     setError('')
     setSuccess('')
-    const current = editorRef.current
-    const html = wrapEmail(current?.getHtml() || '')
-    const payload = { subject: (subject || '').trim() || 'Sem assunto', content: html }
 
-    // Valida assunto
     if (!(subject || '').trim()) {
       setError('Preencha o assunto antes de salvar.')
       return
     }
+
+    const cfg = { ...config }
+    // Serializa config de forma segura (base64) para evitar quebrar HTML
+    let cfgB64 = ''
+    try {
+      cfgB64 = btoa(unescape(encodeURIComponent(JSON.stringify(cfg))))
+    } catch (_) {
+      cfgB64 = ''
+    }
+    const cfgMeta = `<meta name=\"tpl-config\" content='${cfgB64}'>`
+    const editorMeta = `<meta name=\"tpl-editor\" content=\"tinymce\">`
+
+    // Envolve o conteúdo do TINYMCE com wrapper de email seguro
+    const wrappedContent = wrapEmail(content, cfg)
+    const html = `<!doctype html><html><head><meta charset=\"UTF-8\">${editorMeta}${cfgMeta}</head><body>${wrappedContent}</body></html>`
+    const payload = { subject: (subject || '').trim() || 'Sem assunto', content: html, editor_config: cfg }
 
     setLoading(true)
     try {
@@ -110,7 +203,6 @@ export default function TemplateEditor() {
       } else {
         const res = await api.post('/api/templates/', payload)
         setSuccess('Template salvo com sucesso.')
-        // após criar, ir para edição (mantém na mesma página com id)
         navigate(`/templates/${res.data?.id || ''}/edit`, { replace: true })
       }
     } catch (e) {
@@ -125,10 +217,7 @@ export default function TemplateEditor() {
     setShowGallery(false)
     let html = ''
     if (presetTemplates[key]) html = presetTemplates[key]()
-    setInitialHtml(html)
-    // força re-render do editor se já montado
-    const e = editorRef.current
-    if (e) e.setComponents(html)
+    setContent(html)
   }
 
   return (
@@ -177,24 +266,28 @@ export default function TemplateEditor() {
       {showGallery ? (
         <TemplateGallery onSelect={startFrom} />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr_300px] gap-4">
-          <div id="blocks-panel" className="border border-border rounded-md bg-card p-2 overflow-auto" />
-          <div className="border border-border rounded-md overflow-hidden">
-            <div ref={containerRef} />
+        <div className="space-y-4">
+          <div className="border border-border rounded-md overflow-hidden bg-white">
+            <Editor
+              apiKey="15pnntnp7hwu94l19im2zob4n5mko7abmn0kosz2197shhry"
+              value={content}
+              onEditorChange={(newContent) => setContent(newContent)}
+              init={getTinyMCEConfig()}
+              onInit={(evt, editor) => {
+                console.log('TINYMCE initialized successfully');
+                console.log('Editor:', editor);
+              }}
+              onLoadContent={(e) => {
+                console.log('TINYMCE content loaded');
+              }}
+            />
           </div>
-          <div className="space-y-3">
-            <div id="layers-panel" className="border border-border rounded-md bg-card p-2 overflow-auto" />
-            <div id="styles-panel" className="border border-border rounded-md bg-card p-2 overflow-auto" />
-            <div id="traits-panel" className="border border-border rounded-md bg-card p-2 overflow-auto" />
-            <div className="border border-border rounded-md bg-card p-3">
-              <div className="text-sm font-medium mb-2">Configurações</div>
-              <TemplateEditorConfigPanel editor={editorRef.current} />
-            </div>
+          <div className="border border-border rounded-md bg-card p-3">
+            <div className="text-sm font-medium mb-2">Configurações</div>
+            <TemplateEditorConfigPanel config={config} onChange={(patch) => setConfig((prev) => ({ ...prev, ...patch }))} />
           </div>
         </div>
       )}
     </div>
   )
 }
-
-

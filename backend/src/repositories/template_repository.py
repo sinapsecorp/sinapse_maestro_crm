@@ -11,3 +11,15 @@ class TemplateRepository(BaseRepository[Template]):
 template_repository = TemplateRepository()
 
 
+
+
+
+
+
+
+
+
+
+
+
+

@@ -6,14 +6,17 @@ import { Label } from '@/components/ui/label'
 import { useCampaignWizard } from '@/hooks/useCampaignWizard'
 import api from '@/services/api'
 import { useNavigate } from 'react-router-dom'
-import { skeletonEmailTemplate, okeEditableTemplate } from './emailTemplates'
+import { okeEditableTemplate } from './emailTemplates'
 
 export default function CampaignWizardChannel() {
   const navigate = useNavigate()
   const { form, channels, currentIndex, setCurrentIndex, setChannelTemplate, reset } = useCampaignWizard()
 
   const channel = channels[currentIndex]
-  const current = useMemo(() => (form.templates || []).find((t) => t.channel_id === channel?.id) || { channel_id: channel?.id, subject: form.subject, content: '' }, [form.templates, channel, form.subject])
+  const current = useMemo(() => {
+    const found = (form.templates || []).find((t) => t.channel_id === channel?.id)
+    return found || { channel_id: channel?.id, subject: form.subject, content: '' }
+  }, [form.templates, channel, form.subject])
   const isRich = /whatsapp|e-mail|email|sms/i.test((channel?.name || ''))
   const isEmail = /e-mail|email/i.test((channel?.name || ''))
   const editorRef = useRef(null)
@@ -163,11 +166,8 @@ export default function CampaignWizardChannel() {
           {isEmail && (
             <div className="flex gap-2">
               <div className="flex gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setChannelTemplate(channel.id, { content: okeEditableTemplate({ primaryColor: '#0a78ff' }) })}>
+                <Button type="button" variant="outline" size="sm" onClick={() => setChannelTemplate(channel.id, { content: okeEditableTemplate({ primaryColor: '#0a78ff', contentBg: '#ffffff' }) })}>
                   Inserir modelo OKE
-                </Button>
-                <Button type="button" variant="outline" size="sm" onClick={() => setChannelTemplate(channel.id, { content: skeletonEmailTemplate({}) })}>
-                  Inserir esqueleto editável
                 </Button>
               </div>
             </div>
@@ -176,7 +176,7 @@ export default function CampaignWizardChannel() {
         {isEmail ? (
           <div className="w-full border border-border rounded-md overflow-hidden">
             <RichEmailEditor
-              value={current.content || ''}
+              value={(current.content || '')}
               onChange={(html) => setChannelTemplate(channel.id, { content: html })}
             />
           </div>

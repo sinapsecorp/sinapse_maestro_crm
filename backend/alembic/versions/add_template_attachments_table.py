@@ -31,8 +31,20 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id')
     )
 
+    # editor_config JSON em templates (idempotente)
+    try:
+        with op.batch_alter_table('templates') as batch_op:
+            batch_op.add_column(sa.Column('editor_config', sa.JSON(), nullable=True))
+    except Exception:
+        pass
+
 
 def downgrade() -> None:
     op.drop_table('template_attachments')
+    try:
+        with op.batch_alter_table('templates') as batch_op:
+            batch_op.drop_column('editor_config')
+    except Exception:
+        pass
 
 

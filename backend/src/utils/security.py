@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+import os
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
@@ -13,10 +14,11 @@ from src.schemas.auth_schemas import TokenData
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Secret key to encode/decode JWT tokens
-SECRET_KEY = "a_secret_key"
+SECRET_KEY = os.getenv("SECRET_KEY", "a_secret_key")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+# Aumenta padrão para 8h; permite configurar via env ACCESS_TOKEN_EXPIRE_MINUTES
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "480"))
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verifies a password against its hash."""

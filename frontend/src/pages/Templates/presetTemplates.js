@@ -1,161 +1,80 @@
 export const presetLabels = {
-  single: '1 coluna (single_column)',
-  minimal: 'Minimalista (simple_cta)',
-  message: 'Mensagem Simples',
-  newsletter: 'Newsletter',
-  ecommerce: 'E-commerce',
-  welcome: 'Boas-vindas',
+  oke: 'Modelo OKE',
 }
 
+// Apenas um modelo: OKE (centralizado por tabela wrapper com margin:auto)
 export const presetTemplates = {
-  // 1 coluna: hero com imagem, título, parágrafo e CTA
-  single: ({
-    hero = 'https://via.placeholder.com/600x220?text=Hero',
-    title = 'eBook | Título do eBook',
-    desc = 'Texto de apoio curto descrevendo sua oferta ou conteúdo.',
-    ctaText = 'Baixar agora',
+  oke: ({
+    primaryColor = '#0a78ff',
+    ctaText = 'Call to Action',
     ctaUrl = '#',
+    title = 'Título da sua mensagem',
+    p1 = 'Descreva aqui sua oferta e benefícios.',
+    p2 = 'Inclua detalhes adicionais, prazos e diferenciais.',
+    contentBg = '#ffffff',
   } = {}) => `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f7f9;padding:24px 0;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:24px 0;margin:0;">
     <tr><td>
-      <table role="presentation" align="center" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#111;">
+      <table role="presentation" align="center" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;margin:0 auto;font-family:Arial,Helvetica,sans-serif;color:#111;background:${contentBg};border-radius:8px;">
         <tr>
-          <td style="padding:0;">
-            <img src="${hero}" alt="Hero" style="width:100%;height:auto;display:block;" />
+          <td style="padding:0 8px;">
+            <div data-slot="hero" style="width:100%;text-align:center;min-height:140px;border:1px dashed #e5e7eb;border-radius:6px;padding:8px;color:#6b7280;">Cole sua imagem de topo aqui</div>
+          </td>
+        </tr>
+        <tr><td style="height:16px;line-height:16px">&nbsp;</td></tr>
+        <tr>
+          <td style="padding:0 8px;">
+            <div style="max-width:560px;margin:0 auto;">
+              <div data-gjs-type="text" style="min-height:800px;line-height:1.6;text-align:left;">
+                <h2 style="margin:0 0 12px 0;font-size:20px;">${title}</h2>
+                <p style="margin:0 0 12px 0;">${p1}</p>
+                <p style="margin:0 0 16px 0;">${p2}</p>
+              </div>
+            </div>
           </td>
         </tr>
         <tr>
-          <td style="padding:24px;">
-            <h1 style="margin:0 0 8px 0;font-size:22px;">${title}</h1>
-            <p style="margin:0 0 16px 0;font-size:14px;line-height:1.6;">${desc}</p>
-            <a href="${ctaUrl}" style="display:inline-block;background:#0a78ff;color:#fff;padding:12px 18px;border-radius:6px;text-decoration:none;font-size:14px;">${ctaText}</a>
+          <td style="padding:8px;text-align:center;">
+            <a href="${ctaUrl}" style="display:inline-block;padding:12px 20px;color:#ffffff;text-decoration:none;font-weight:700;border-radius:8px;background:${primaryColor};background-color:${primaryColor};border:none;margin:8px auto;">${ctaText}</a>
           </td>
         </tr>
+        <tr><td style="height:16px;line-height:16px">&nbsp;</td></tr>
         <tr>
-          <td style="padding:16px 24px;font-size:12px;color:#666;border-top:1px solid #eee;">
-            Caso não queira mais receber estes e-mails, <a href="#" style="color:#0a78ff;">cancele sua inscrição</a>.
+          <td style="padding:0 8px;">
+            <div data-slot="footer" style="background:${primaryColor};color:#ffffff;padding:12px;border-radius:6px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:4px 0;text-align:center;">Edite este rodapé</td>
+                </tr>
+                <tr>
+          <td style="padding-top:8px;text-align:left;">
+                    <div data-slot="footer-icons" style="line-height:0;">
+                      <table role="presentation" align="left" cellpadding="0" cellspacing="0" border="0" style="margin:0;line-height:0;">
+                        <tr>
+                          <td style="line-height:0;">
+                            <div data-slot="fi-1" style="min-width:28px;min-height:28px;"></div>
+                          </td>
+                          <td style="padding-left:16px;line-height:0;">
+                            <div data-slot="fi-2" style="min-width:28px;min-height:28px;"></div>
+                          </td>
+                          <td style="padding-left:16px;line-height:0;">
+                            <div data-slot="fi-3" style="min-width:28px;min-height:28px;"></div>
+                          </td>
+                          <td style="padding-left:16px;line-height:0;">
+                            <div data-slot="fi-4" style="min-width:28px;min-height:28px;"></div>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
           </td>
         </tr>
-      </table>
-    </td></tr>
-  </table>
-  `,
-
-  // Minimalista com CTA central
-  minimal: ({
-    logo = 'https://via.placeholder.com/120x40?text=Logo',
-    text = 'Estamos quase lá... Confirme seu e-mail para continuar.',
-    ctaText = 'Confirmar e-mail',
-    ctaUrl = '#',
-  } = {}) => `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f7f9;padding:24px 0;">
-    <tr><td>
-      <table role="presentation" align="center" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#111;text-align:center;">
-        <tr><td style="padding:24px 24px 8px 24px;"><img src="${logo}" alt="Logo" style="height:40px;width:auto;display:inline-block;" /></td></tr>
-        <tr><td style="padding:8px 24px 16px 24px;"><p style="margin:0;font-size:14px;">${text}</p></td></tr>
-        <tr><td style="padding:0 24px 24px 24px;"><a href="${ctaUrl}" style="display:inline-block;background:#0a78ff;color:#fff;padding:12px 18px;border-radius:999px;text-decoration:none;font-size:14px;">${ctaText}</a></td></tr>
-      </table>
-    </td></tr>
-  </table>
-  `,
-
-  // Mensagem tipo carta com assinatura
-  message: ({
-    title = 'Olá, {PRIMEIRO_NOME}',
-    p1 = 'Mensagem introdutória com o motivo do contato.',
-    p2 = 'Mais detalhes e próximos passos para o destinatário.',
-    sign = 'https://via.placeholder.com/120x40?text=Assinatura',
-  } = {}) => `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f7f9;padding:24px 0;">
-    <tr><td>
-      <table role="presentation" align="center" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#111;">
-        <tr><td style="padding:24px;">
-          <h2 style="margin:0 0 8px 0;font-size:20px;">${title}</h2>
-          <p style="margin:0 0 12px 0;font-size:14px;line-height:1.7;">${p1}</p>
-          <p style="margin:0 0 12px 0;font-size:14px;line-height:1.7;">${p2}</p>
-          <img src="${sign}" alt="Assinatura" style="margin-top:8px;height:40px;width:auto;display:block;" />
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-  `,
-
-  // Newsletter com hero e 2 colunas
-  newsletter: ({
-    logo = 'https://via.placeholder.com/120x40?text=Logo',
-    hero = 'https://via.placeholder.com/600x200?text=Novidades',
-  } = {}) => `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f7f9;padding:24px 0;">
-    <tr><td>
-      <table role="presentation" align="center" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#111;">
-        <tr><td style="padding:16px 24px 8px 24px;"><img src="${logo}" alt="Logo" style="height:40px;width:auto;display:block;" /></td></tr>
-        <tr><td><img src="${hero}" alt="Banner" style="width:100%;display:block;height:auto;" /></td></tr>
-        <tr><td style="padding:16px 24px;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td width="50%" style="vertical-align:top;padding-right:12px;">
-                <img src="https://via.placeholder.com/260x140?text=Item+1" alt="Item 1" style="width:100%;height:auto;border-radius:6px;display:block;margin:0 0 8px 0;" />
-                <h3 style="margin:0 0 6px 0;font-size:16px;">Destaque da semana</h3>
-                <p style="margin:0;font-size:14px;">Resumo breve do conteúdo principal.</p>
-              </td>
-              <td width="50%" style="vertical-align:top;padding-left:12px;">
-                <img src="https://via.placeholder.com/260x140?text=Item+2" alt="Item 2" style="width:100%;height:auto;border-radius:6px;display:block;margin:0 0 8px 0;" />
-                <h3 style="margin:0 0 6px 0;font-size:16px;">Webinar exclusivo</h3>
-                <p style="margin:0;font-size:14px;">Chamada rápida para inscrição.</p>
-              </td>
-            </tr>
-          </table>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-  `,
-
-  // E-commerce com 3 produtos
-  ecommerce: ({
-    title = 'Ofertas imperdíveis',
-  } = {}) => `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f7f9;padding:24px 0;">
-    <tr><td>
-      <table role="presentation" align="center" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#111;">
-        <tr><td style="padding:20px 24px;"><h2 style="margin:0;font-size:20px;">${title}</h2></td></tr>
-        <tr><td style="padding:0 16px 16px 16px;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              ${[1,2,3].map(i => `
-              <td width="33%" style="vertical-align:top;padding:8px;">
-                <img src="https://via.placeholder.com/160x140?text=Produto+${i}" alt="Produto ${i}" style="width:100%;height:auto;border-radius:6px;display:block;margin:0 0 8px 0;" />
-                <div style="font-size:14px;margin:0 0 6px 0;">Produto ${i}</div>
-                <div style="font-size:14px;color:#0a78ff;margin:0 0 8px 0;">R$ 99,90</div>
-                <a href="#" style="display:inline-block;background:#0a78ff;color:#fff;padding:8px 12px;border-radius:6px;text-decoration:none;font-size:13px;">Comprar</a>
-              </td>`).join('')}
-            </tr>
-          </table>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-  `,
-
-  // Boas-vindas com logo e CTA
-  welcome: ({
-    logo = 'https://via.placeholder.com/120x40?text=Logo',
-    title = 'Receba nossas boas‑vindas!',
-    subtitle = 'Estamos felizes por você aqui. Explore os recursos e comece.',
-    ctaText = 'Começar agora',
-    ctaUrl = '#',
-  } = {}) => `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f7f9;padding:24px 0;">
-    <tr><td>
-      <table role="presentation" align="center" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#111;text-align:center;">
-        <tr><td style="padding:24px 24px 8px 24px;"><img src="${logo}" alt="Logo" style="height:40px;width:auto;display:inline-block;" /></td></tr>
-        <tr><td style="padding:8px 24px 0 24px;"><h1 style="margin:0;font-size:22px;">${title}</h1></td></tr>
-        <tr><td style="padding:8px 24px 16px 24px;"><p style="margin:0;font-size:14px;">${subtitle}</p></td></tr>
-        <tr><td style="padding:0 24px 24px 24px;"><a href="${ctaUrl}" style="display:inline-block;background:#0a78ff;color:#fff;padding:12px 18px;border-radius:6px;text-decoration:none;font-size:14px;">${ctaText}</a></td></tr>
       </table>
     </td></tr>
   </table>
   `,
 }
-
 

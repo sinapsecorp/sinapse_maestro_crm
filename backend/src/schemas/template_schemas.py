@@ -23,7 +23,10 @@ class TemplateAttachmentOut(BaseModel):
 
 class TemplateBase(BaseModel):
     subject: str
+    # Conteúdo completo em HTML (inclui <head>/<style>/metas) para preservar layout do editor
     content: str
+    # Configurações do editor (persistidas opcionalmente em meta e/ou aqui para buscas futuras)
+    editor_config: Optional[dict] = None
     channel_id: Optional[UUID] = None
     campaign_id: Optional[UUID] = None
 
@@ -35,6 +38,7 @@ class TemplateCreate(TemplateBase):
 class TemplateUpdate(BaseModel):
     subject: Optional[str] = None
     content: Optional[str] = None
+    editor_config: Optional[dict] = None
     channel_id: Optional[UUID] = None
     campaign_id: Optional[UUID] = None
     attachments: Optional[List[TemplateAttachmentIn]] = None

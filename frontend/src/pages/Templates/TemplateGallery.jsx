@@ -2,12 +2,7 @@ import { useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 
 const gallery = [
-  { key: 'single', name: 'Coluna Única', description: 'Layout simples 1 coluna', preview: '', suggested: true },
-  { key: 'minimal', name: 'Minimalista (CTA)', description: 'Foco em uma ação', preview: '' },
-  { key: 'simple', name: 'Mensagem Simples', description: 'Mais texto, leitura fácil', preview: '' },
-  { key: 'newsletter', name: 'Newsletter', description: 'Seções de notícias e destaques', preview: '' },
-  { key: 'ecommerce', name: 'E-commerce', description: 'Produtos, preços e imagens', preview: '' },
-  { key: 'welcome', name: 'Boas-Vindas', description: 'Apresentação e CTAs de engajamento', preview: '' },
+  { key: 'oke', name: 'Modelo OKE', description: 'Layout centralizado com CTA', preview: '', suggested: true },
 ]
 
 export default function TemplateGallery({ onSelect }) {
@@ -35,5 +30,8 @@ export default function TemplateGallery({ onSelect }) {
     </div>
   )
 }
+
+
+
 
 
